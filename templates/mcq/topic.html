@@ -1,0 +1,48 @@
+{% extends 'basemain.html' %} {% load static %} {% block content %}
+        <div class="main p-3">
+
+            <!-- <div class="">
+                <a href="{{ back_to_topics_url }}">
+                  <button class="hovered p-2 mb-0 m-3" 
+                style="border-width: 0px;
+                border-radius: 5px;">
+                 <i class="bi bi-arrow-left"></i>
+                </button>
+              </a>
+              </a>
+                </div> -->
+            <!-- <div>
+                <a href="{% url 'home_new' %}">
+                    <button class="hovered p-2" style="border-width: 0px;   border-radius: 5px; border-bottom-right-radius: 6px; border-top-left-radius: 6px;">HOME</button>
+                </a>
+                <a href="{% url 'subject_list' %}">
+                    <button class="hovered p-2" style="border-width: 0px;  border-radius: 5px; border-bottom-right-radius: 6px; border-top-left-radius: 6px;">SUBJECTS</button>
+                </a>
+            </div> -->
+            <div class="d-flex justify-content-center mb-4 adjustSmallscreen" style="align-items: center;">
+                <h1>TOPICS OF {{subject.subject_name}}</h1>
+            </div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    {% for topic in topics %}
+                    <div class="col-12 col-md-11 mb-3">
+                        <div class="card shadow p-3 hovered ">
+                            <a href="{% url 'mcq_quiz' topic_slug=topic.slug question_num=1 %}" style="color:black;">
+                                <div class="d-flex justify-content-between hovered " style="align-items: center;">
+                                   <div class= "d-flex pt-3">
+                                       <p><strong> {{ topic.topic_name }}</strong><br/>
+                                        {{ topic.subtopic_count }} Sub Topic </p>
+                                    </div>
+                                    <div class="d-none d-md-block">
+                                        <i class="bi bi-chevron-right" ></i>
+                                    </div>  
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

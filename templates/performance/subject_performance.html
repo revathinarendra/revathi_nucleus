@@ -1,0 +1,94 @@
+{% extends 'basemain.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main p-3">
+    <div class="d-flex justify-content-center mb-4 adjustSmallscreen" style="align-items: center;">
+        <h1>Subject Performance Analysis</h1>
+    </div>
+    <div class="container">
+        <!-- Subject selection dropdown -->
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-6">
+                <label for="subject-select" class="form-label">Select a Subject:</label>
+                <select id="subject-select" class="form-select">
+                    {% for subject in subjects %}
+                        <option value="{{ subject.subject_name }}">{{ subject.subject_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <!-- Chart container -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-12 col-md-11">
+                <div id="chart-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const performanceData = {{ performance_data|safe }};
+        const topicsData = {{ topics_data|safe }};
+        console.log('Performance Data:', performanceData);
+        console.log('Topics Data:', topicsData);
+
+        const subjectSelect = document.getElementById('subject-select');
+        const chartContainer = document.getElementById('chart-container');
+
+        // Function to truncate string to max length
+        function truncateString(str, maxLength) {
+            if (str.length > maxLength) {
+                return str.substring(0, maxLength) + '...';
+            }
+            return str;
+        }
+
+        // Function to update the chart based on selected subject
+        function updateChart(selectedSubject) {
+            const topicNames = topicsData[selectedSubject];
+
+            const data = topicNames.map(topic => {
+                const truncatedTopicName = truncateString(topic, 20);
+                return {
+                    x: [selectedSubject], // Single subject
+                    y: [performanceData[selectedSubject][topic]?.percentage || 0], // Percentage for the topic
+                    type: 'bar',
+                    name: truncatedTopicName, // Display truncated topic name on the legend
+                    text: [truncatedTopicName], // Display truncated topic name on the bar
+                    textposition: 'auto', // Automatically position the topic name on the bar
+                };
+            });
+
+            const layout = {
+                title: `Performance Analysis for ${selectedSubject}`,
+                barmode: 'group',
+                xaxis: { title: 'Subjects' },
+                yaxis: { title: 'Percentage (%)', range: [0, 100], tickvals: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], ticktext: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'] },
+            };
+
+            // Plotly.newPlot will create or update the chart
+            Plotly.newPlot('chart-container', data, layout)
+                .then(gd => {
+                    console.log('Plotly chart rendered successfully', gd);
+                })
+                .catch(error => {
+                    console.error('Error rendering Plotly chart:', error);
+                });
+        }
+
+        // Event listener for subject selection change
+        subjectSelect.addEventListener('change', function() {
+            const selectedSubject = subjectSelect.value;
+            updateChart(selectedSubject);
+        });
+
+        // Initial chart render with the first subject
+        const initialSubject = subjectSelect.value; // Assuming the first subject is selected by default
+        updateChart(initialSubject);
+    });
+</script>
+{% endblock %}

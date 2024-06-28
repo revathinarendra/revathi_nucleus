@@ -1,0 +1,8 @@
+*.pyc
+__pycache__/
+.env
+local_settings.py
+db.sqlite3
+nucleus-env
+db.json
+settingsold.py
